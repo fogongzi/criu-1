@@ -72,6 +72,7 @@ message core_entry {
 		ARM             = 2;
 		AARCH64		= 3;
 		PPC64		= 4;
+		X86_32		= 5;
 	}
 
 	required march			mtype		= 1;
