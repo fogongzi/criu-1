@@ -96,13 +96,21 @@ int syscall_seized(struct parasite_ctl *ctl, int nr, unsigned long *ret,
 	int err;
 
 	regs.ax  = (unsigned long)nr;
+#ifdef CONFIG_X86_64
 	regs.di  = arg1;
 	regs.si  = arg2;
 	regs.dx  = arg3;
 	regs.r10 = arg4;
 	regs.r8  = arg5;
 	regs.r9  = arg6;
-
+#else
+	regs.bx = arg1;
+	regs.cx = arg2;
+	regs.dx = arg3;
+	regs.si = arg4;
+	regs.di = arg5;
+	regs.bp = arg6;
+#endif
 	err = __parasite_execute_syscall(ctl, &regs);
 
 	*ret = regs.ax;
@@ -138,16 +146,21 @@ int get_task_regs(pid_t pid, user_regs_struct_t regs, CoreEntry *core)
 #define assign_reg(dst, src, e)		do { dst->e = (__typeof__(dst->e))src.e; } while (0)
 #define assign_array(dst, src, e)	memcpy(dst->e, &src.e, sizeof(src.e))
 
+#ifdef CONFIG_X86_64
 	assign_reg(core->thread_info->gpregs, regs, r15);
 	assign_reg(core->thread_info->gpregs, regs, r14);
 	assign_reg(core->thread_info->gpregs, regs, r13);
 	assign_reg(core->thread_info->gpregs, regs, r12);
-	assign_reg(core->thread_info->gpregs, regs, bp);
-	assign_reg(core->thread_info->gpregs, regs, bx);
 	assign_reg(core->thread_info->gpregs, regs, r11);
 	assign_reg(core->thread_info->gpregs, regs, r10);
 	assign_reg(core->thread_info->gpregs, regs, r9);
 	assign_reg(core->thread_info->gpregs, regs, r8);
+	assign_reg(core->thread_info->gpregs, regs, fs_base);
+	assign_reg(core->thread_info->gpregs, regs, gs_base);
+#endif
+
+	assign_reg(core->thread_info->gpregs, regs, bp);
+	assign_reg(core->thread_info->gpregs, regs, bx);
 	assign_reg(core->thread_info->gpregs, regs, ax);
 	assign_reg(core->thread_info->gpregs, regs, cx);
 	assign_reg(core->thread_info->gpregs, regs, dx);
@@ -159,8 +172,7 @@ int get_task_regs(pid_t pid, user_regs_struct_t regs, CoreEntry *core)
 	assign_reg(core->thread_info->gpregs, regs, flags);
 	assign_reg(core->thread_info->gpregs, regs, sp);
 	assign_reg(core->thread_info->gpregs, regs, ss);
-	assign_reg(core->thread_info->gpregs, regs, fs_base);
-	assign_reg(core->thread_info->gpregs, regs, gs_base);
+
 	assign_reg(core->thread_info->gpregs, regs, ds);
 	assign_reg(core->thread_info->gpregs, regs, es);
 	assign_reg(core->thread_info->gpregs, regs, fs);

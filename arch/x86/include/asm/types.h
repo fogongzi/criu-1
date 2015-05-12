@@ -24,7 +24,11 @@ typedef void rt_restorefn_t(void);
 typedef rt_restorefn_t *rt_sigrestore_t;
 
 #define _KNSIG           64
+#ifdef CONFIG_X86_64
 # define _NSIG_BPW      64
+#else
+# define _NSIG_BPW      32
+#endif
 
 #define _KNSIG_WORDS     (_KNSIG / _NSIG_BPW)
 
@@ -41,12 +45,21 @@ static inline void ksigfillset(k_rtsigset_t *set)
 
 #define SA_RESTORER	0x04000000
 
+#ifdef CONFIG_X86_64
 typedef struct {
 	rt_sighandler_t	rt_sa_handler;
 	unsigned long	rt_sa_flags;
 	rt_sigrestore_t	rt_sa_restorer;
 	k_rtsigset_t	rt_sa_mask;
 } rt_sigaction_t;
+#else
+typedef struct {
+	rt_sighandler_t	rt_sa_handler;
+	k_rtsigset_t	rt_sa_mask;
+	unsigned long	rt_sa_flags;
+	rt_sigrestore_t	rt_sa_restorer;
+} rt_sigaction_t;
+#endif
 
 typedef struct {
 	unsigned int	entry_number;
@@ -58,8 +71,12 @@ typedef struct {
 	unsigned int	limit_in_pages:1;
 	unsigned int	seg_not_present:1;
 	unsigned int	useable:1;
+#ifdef CONFIG_X86_64
 	unsigned int	lm:1;
+#endif
 } user_desc_t;
+
+#ifdef CONFIG_X86_64
 
 typedef struct {
 	unsigned long	r15;
@@ -91,20 +108,29 @@ typedef struct {
 	unsigned long	gs;
 } user_regs_struct_t;
 
+#else
+
 typedef struct {
-	unsigned short	cwd;
-	unsigned short	swd;
-	unsigned short	twd;	/* Note this is not the same as
-				   the 32bit/x87/FSAVE twd */
-	unsigned short	fop;
-	u64		rip;
-	u64		rdp;
-	u32		mxcsr;
-	u32		mxcsr_mask;
-	u32		st_space[32];	/* 8*16 bytes for each FP-reg = 128 bytes */
-	u32		xmm_space[64];	/* 16*16 bytes for each XMM-reg = 256 bytes */
-	u32		padding[24];
-} user_fpregs_struct_t;
+	unsigned long	bx;
+	unsigned long	cx;
+	unsigned long	dx;
+	unsigned long	si;
+	unsigned long	di;
+	unsigned long	bp;
+	unsigned long	ax;
+	unsigned long	ds;
+	unsigned long	es;
+	unsigned long	fs;
+	unsigned long	gs;
+	unsigned long	orig_ax;
+	unsigned long	ip;
+	unsigned long	cs;
+	unsigned long	flags;
+	unsigned long	sp;
+	unsigned long	ss;
+} user_regs_struct_t;
+
+#endif
 
 #define ASSIGN_TYPED(a, b) do { a = (typeof(a))b; } while (0)
 #define ASSIGN_MEMBER(a,b,m) do { ASSIGN_TYPED((a)->m, (b)->m); } while (0)
@@ -126,7 +152,11 @@ typedef u32 tls_t;
 #define REG_IP(regs)  ((regs).ip)
 #define REG_SYSCALL_NR(regs)	((regs).orig_ax)
 
-#define CORE_ENTRY__MARCH CORE_ENTRY__MARCH__X86_64
+#ifdef CONFIG_X86_64
+# define CORE_ENTRY__MARCH CORE_ENTRY__MARCH__X86_64
+#else
+# define CORE_ENTRY__MARCH CORE_ENTRY__MARCH__X86_32
+#endif
 
 #define AT_VECTOR_SIZE 44
 
