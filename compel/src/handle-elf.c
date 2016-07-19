@@ -11,11 +11,12 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
+#include "uapi/piegen.h"
+
 #include "asm-generic/int.h"
 
-#include "uapi/piegen-err.h"
-#include "piegen.h"
 #include "handle-elf.h"
+#include "piegen.h"
 
 /* TODO: merge with util-vdso.c part in criu header */
 /* Check if pointer is out-of-bound */
@@ -143,7 +144,7 @@ int __handle_elf(void *mem, size_t size)
 #ifdef ELF_PPC64
 	s64 toc_offset = 0;
 #endif
-	int ret = -E_UNKNOWN;
+	int ret = -EINVAL;
 
 	pr_debug("Header\n");
 	pr_debug("------------\n");
@@ -152,22 +153,19 @@ int __handle_elf(void *mem, size_t size)
 
 	if (!is_header_supported(hdr)) {
 		pr_err("Unsupported header detected\n");
-		ret = -E_NOT_ELF;
 		goto err;
 	}
 
 	sec_hdrs = malloc(sizeof(*sec_hdrs) * hdr->e_shnum);
 	if (!sec_hdrs) {
 		pr_err("No memory for section headers\n");
-		ret = -E_NOMEM;
+		ret = -ENOMEM;
 		goto err;
 	}
 
 	secstrings = get_strings_section(hdr, (uintptr_t)mem, size);
-	if (!secstrings) {
-		ret = -E_NO_STR_SEC;
+	if (!secstrings)
 		goto err;
-	}
 
 	pr_debug("Sections\n");
 	pr_debug("------------\n");

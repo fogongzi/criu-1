@@ -1,7 +1,7 @@
 #ifndef __COMPEL_HANDLE_ELF_H__
 #define __COMPEL_HANDLE_ELF_H__
 
-#include "uapi/elf32-types.h"
+#include "elf32-types.h"
 
 #define __handle_elf	handle_elf_arm
 #define arch_is_machine_supported(e_machine)   (e_machine == EM_ARM)
