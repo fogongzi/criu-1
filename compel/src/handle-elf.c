@@ -83,7 +83,7 @@ static int do_relative_toc(long value, uint16_t *location,
 }
 #endif
 
-static bool is_header_supported(Ehdr_t *hdr)
+static bool is_header_supported(Elf_Ehdr *hdr)
 {
 	if (!arch_is_machine_supported(hdr->e_machine))
 		return false;
@@ -92,11 +92,11 @@ static bool is_header_supported(Ehdr_t *hdr)
 	return true;
 }
 
-static const char *get_strings_section(Ehdr_t *hdr, uintptr_t mem, size_t size)
+static const char *get_strings_section(Elf_Ehdr *hdr, uintptr_t mem, size_t size)
 {
 	size_t sec_table_size = ((size_t) hdr->e_shentsize) * hdr->e_shnum;
 	uintptr_t sec_table = mem + hdr->e_shoff;
-	Shdr_t *secstrings_hdr;
+	Elf_Shdr *secstrings_hdr;
 	uintptr_t addr;
 
 	if (__ptr_struct_oob(sec_table, sec_table_size, mem, size)) {
@@ -110,7 +110,7 @@ static const char *get_strings_section(Ehdr_t *hdr, uintptr_t mem, size_t size)
 	 * (size of section header * index of string section header)
 	 */
 	addr = sec_table + ((size_t) hdr->e_shentsize) * hdr->e_shstrndx;
-	if (__ptr_struct_oob(addr, sizeof(Shdr_t),
+	if (__ptr_struct_oob(addr, sizeof(Elf_Shdr),
 			sec_table, sec_table + sec_table_size)) {
 		pr_err("String section header @%#zx is out of [%#zx, %#zx)\n",
 			addr, sec_table, sec_table + sec_table_size);
@@ -132,12 +132,12 @@ static const char *get_strings_section(Ehdr_t *hdr, uintptr_t mem, size_t size)
 int __handle_elf(void *mem, size_t size)
 {
 	const char *symstrings = NULL;
-	Shdr_t *symtab_hdr = NULL;
-	Sym_t *symbols = NULL;
-	Ehdr_t *hdr = mem;
+	Elf_Shdr *symtab_hdr = NULL;
+	Elf_Sym *symbols = NULL;
+	Elf_Ehdr *hdr = mem;
 
-	Shdr_t *strtab_hdr = NULL;
-	Shdr_t **sec_hdrs = NULL;
+	Elf_Shdr *strtab_hdr = NULL;
+	Elf_Shdr **sec_hdrs = NULL;
 	const char *secstrings;
 
 	size_t i, k, nr_gotpcrel = 0;
@@ -170,7 +170,7 @@ int __handle_elf(void *mem, size_t size)
 	pr_debug("Sections\n");
 	pr_debug("------------\n");
 	for (i = 0; i < hdr->e_shnum; i++) {
-		Shdr_t *sh = mem + hdr->e_shoff + hdr->e_shentsize * i;
+		Elf_Shdr *sh = mem + hdr->e_shoff + hdr->e_shentsize * i;
 		ptr_func_exit(sh);
 
 		if (sh->sh_type == SHT_SYMTAB)
@@ -219,9 +219,9 @@ int __handle_elf(void *mem, size_t size)
 	pr_out("#include \"%s/types.h\"\n", opts.uapi_dir);
 
 	for (i = 0; i < symtab_hdr->sh_size / symtab_hdr->sh_entsize; i++) {
-		Sym_t *sym = &symbols[i];
+		Elf_Sym *sym = &symbols[i];
 		const char *name;
-		Shdr_t *sh_src;
+		Elf_Shdr *sh_src;
 
 		ptr_func_exit(sym);
 		name = &symstrings[sym->st_name];
@@ -262,8 +262,8 @@ int __handle_elf(void *mem, size_t size)
 	pr_debug("Relocations\n");
 	pr_debug("------------\n");
 	for (i = 0; i < hdr->e_shnum; i++) {
-		Shdr_t *sh = sec_hdrs[i];
-		Shdr_t *sh_rel;
+		Elf_Shdr *sh = sec_hdrs[i];
+		Elf_Shdr *sh_rel;
 
 		if (sh->sh_type != SHT_REL && sh->sh_type != SHT_RELA)
 			continue;
@@ -281,11 +281,11 @@ int __handle_elf(void *mem, size_t size)
 			unsigned long place;
 			const char *name;
 			void *where;
-			Sym_t *sym;
+			Elf_Sym *sym;
 
 			union {
-				Rel_t rel;
-				Rela_t rela;
+				Elf_Rel rel;
+				Elf_Rela rela;
 			} *r = mem + sh->sh_offset + sh->sh_entsize * k;
 			ptr_func_exit(r);
 
@@ -338,7 +338,7 @@ int __handle_elf(void *mem, size_t size)
 				value32 = (s32)sym->st_value;
 				value64 = (s64)sym->st_value;
 			} else {
-				Shdr_t *sh_src;
+				Elf_Shdr *sh_src;
 
 				if ((unsigned)sym->st_shndx > (unsigned)hdr->e_shnum) {
 					pr_err("Unexpected symbol section index %u/%u\n",
@@ -537,7 +537,7 @@ int __handle_elf(void *mem, size_t size)
 	pr_out("static __maybe_unused const char %s[] = {\n\t", opts.stream_name);
 
 	for (i=0, k=0; i < hdr->e_shnum; i++) {
-		Shdr_t *sh = sec_hdrs[i];
+		Elf_Shdr *sh = sec_hdrs[i];
 		unsigned char *shdata;
 		size_t j;
 

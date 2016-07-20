@@ -1,15 +1,11 @@
 #ifndef __COMPEL_ELF32_TYPES_H__
 #define __COMPEL_ELF32_TYPES_H__
 
-#define Ehdr_t		Elf32_Ehdr
-#define Shdr_t		Elf32_Shdr
-#define Sym_t		Elf32_Sym
-#define Rel_t		Elf32_Rel
-#define Rela_t		Elf32_Rela
-
-#define Off_t		Elf32_Off
-#define Word_t		Elf32_Word
-#define Half_t		Elf32_Half
+#define Elf_Ehdr	Elf32_Ehdr
+#define Elf_Shdr	Elf32_Shdr
+#define Elf_Sym		Elf32_Sym
+#define Elf_Rel		Elf32_Rel
+#define Elf_Rela	Elf32_Rela
 
 #define ELF_ST_TYPE	ELF32_ST_TYPE
 #define ELF_ST_BIND	ELF32_ST_BIND
