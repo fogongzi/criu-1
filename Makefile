@@ -184,7 +184,7 @@ $(eval $(call gen-built-in,images))
 # Compel get used by CRIU, build it earlier
 compel/%: .FORCE
 	$(Q) $(MAKE) $(build)=compel $@
-compel/compel: compel/built-in.o
+compel/compel: compel/built-in.o compel/lib.a
 	$(call msg-link, $@)
 	$(Q) $(CC) $(CFLAGS) $^ $(WRAPFLAGS) $(LDFLAGS) -rdynamic -o $@
 test/compel/%: .FORCE
