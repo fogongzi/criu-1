@@ -416,7 +416,7 @@ int __handle_elf(void *mem, size_t size)
 			case R_PPC64_ADDR32:
 				pr_debug("\t\t\tR_PPC64_ADDR32 at 0x%-4lx val 0x%x\n",
 					 place, (unsigned int)(value32 + addend32));
-				pr_out("	{ .offset = 0x%-8x, .type = PIEGEN_TYPE_INT, "
+				pr_out("	{ .offset = 0x%-8x, .type = COMPEL_TYPE_INT, "
 				       " .addend = %-8d, .value = 0x%-16x, "
 				       "}, /* R_PPC64_ADDR32 */\n",
 				       (unsigned int) place,  addend32, value32);
@@ -426,7 +426,7 @@ int __handle_elf(void *mem, size_t size)
 			case R_PPC64_REL64:
 				pr_debug("\t\t\tR_PPC64_ADDR64 at 0x%-4lx val 0x%lx\n",
 					 place, value64 + addend64);
-				pr_out("\t{ .offset = 0x%-8x, .type = PIEGEN_TYPE_LONG,"
+				pr_out("\t{ .offset = 0x%-8x, .type = COMPEL_TYPE_LONG,"
 				       " .addend = %-8ld, .value = 0x%-16lx, "
 				       "}, /* R_PPC64_ADDR64 */\n",
 				       (unsigned int) place, (long)addend64, (long)value64);
@@ -486,13 +486,13 @@ int __handle_elf(void *mem, size_t size)
 			case R_X86_64_32: /* Symbol + Addend (4 bytes) */
 			case R_X86_64_32S: /* Symbol + Addend (4 bytes) */
 				pr_debug("\t\t\t\tR_X86_64_32       at 0x%-4lx val 0x%x\n", place, value32);
-				pr_out("	{ .offset = 0x%-8x, .type = PIEGEN_TYPE_INT, "
+				pr_out("	{ .offset = 0x%-8x, .type = COMPEL_TYPE_INT, "
 				       ".addend = %-8d, .value = 0x%-16x, }, /* R_X86_64_32 */\n",
 				       (unsigned int)place, addend32, value32);
 				break;
 			case R_X86_64_64: /* Symbol + Addend (8 bytes) */
 				pr_debug("\t\t\t\tR_X86_64_64       at 0x%-4lx val 0x%lx\n", place, (long)value64);
-				pr_out("	{ .offset = 0x%-8x, .type = PIEGEN_TYPE_LONG, "
+				pr_out("	{ .offset = 0x%-8x, .type = COMPEL_TYPE_LONG, "
 				       ".addend = %-8ld, .value = 0x%-16lx, }, /* R_X86_64_64 */\n",
 				       (unsigned int)place, (long)addend64, (long)value64);
 				break;
@@ -512,7 +512,7 @@ int __handle_elf(void *mem, size_t size)
 				break;
 			case R_X86_64_GOTPCREL: /* SymbolOffsetInGot + GOT + Addend - Place  (4 bytes) */
 				pr_debug("\t\t\t\tR_X86_64_GOTPCREL at 0x%-4lx val 0x%x\n", place, value32);
-				pr_out("	{ .offset = 0x%-8x, .type = PIEGEN_TYPE_LONG | PIEGEN_TYPE_GOTPCREL, "
+				pr_out("	{ .offset = 0x%-8x, .type = COMPEL_TYPE_LONG | COMPEL_TYPE_GOTPCREL, "
 				       ".addend = %-8d, .value = 0x%-16x, }, /* R_X86_64_GOTPCREL */\n",
 				       (unsigned int)place, addend32, value32);
 				nr_gotpcrel++;
@@ -522,7 +522,7 @@ int __handle_elf(void *mem, size_t size)
 #ifdef ELF_X86_32
 			case R_386_32: /* Symbol + Addend */
 				pr_debug("\t\t\t\tR_386_32   at 0x%-4lx val 0x%x\n", place, value32 + addend32);
-				pr_out("	{ .offset = 0x%-8x, .type = PIEGEN_TYPE_INT, "
+				pr_out("	{ .offset = 0x%-8x, .type = COMPEL_TYPE_INT, "
 				       ".addend = %-4d, .value = 0x%x, },\n",
 				       (unsigned int)place, addend32, value32);
 				break;
