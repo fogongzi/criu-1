@@ -181,6 +181,7 @@ $(eval $(call gen-built-in,images))
 
 .PHONY: .FORCE
 
+#
 # Compel get used by CRIU, build it earlier
 compel/%: .FORCE
 	$(Q) $(MAKE) $(build)=compel $@
@@ -189,6 +190,12 @@ compel/compel: compel/built-in.o compel/lib.a
 	$(Q) $(CC) $(CFLAGS) $^ $(WRAPFLAGS) $(LDFLAGS) -rdynamic -o $@
 test/compel/%: .FORCE
 	$(Q) $(MAKE) $(build)=compel $@
+
+LIBCOMPEL_SO		:= libcompel.so
+LIBCOMPEL_SO_CFLAGS	+= $(CFLAGS) -rdynamic -Wl,-soname,$(LIBCOMPEL_SO).$(COMPEL_SO_VERSION_MAJOR)
+compel/$(LIBCOMPEL_SO): compel/lib.a
+	$(call msg-link, $@)
+	$(Q) $(CC) -shared $(LIBCOMPEL_SO_CFLAGS) -o $@ -Wl,--whole-archive $^ -Wl,--no-whole-archive $(LDFLAGS)
 
 #
 # CRIU building done in own directory
