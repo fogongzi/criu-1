@@ -129,6 +129,12 @@ static const char *get_strings_section(Elf_Ehdr *hdr, uintptr_t mem, size_t size
 	return (void*)addr;
 }
 
+/*
+ * This name @__handle_elf get renamed into
+ * @handle_elf_ppc64 or say @handle_elf_x86_64
+ * depending on the architecture it's compiled
+ * under.
+ */
 int __handle_elf(void *mem, size_t size)
 {
 	const char *symstrings = NULL;
