@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#include "uapi/piegen.h"
+#include "uapi/compel.h"
 
 #include "asm-generic/int.h"
 
