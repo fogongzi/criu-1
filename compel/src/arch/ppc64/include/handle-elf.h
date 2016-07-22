@@ -1,5 +1,5 @@
-#ifndef __COMPEL_HANDLE_ELF_H__
-#define __COMPEL_HANDLE_ELF_H__
+#ifndef COMPEL_HANDLE_ELF_H__
+#define COMPEL_HANDLE_ELF_H__
 
 #include "elf64-types.h"
 
@@ -10,4 +10,4 @@
 
 extern int handle_elf_ppc64(void *mem, size_t size);
 
-#endif /* __COMPEL_HANDLE_ELF_H__ */
+#endif /* COMPEL_HANDLE_ELF_H__ */

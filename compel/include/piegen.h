@@ -1,5 +1,5 @@
-#ifndef __ELFTIL_H__
-#define __ELFTIL_H__
+#ifndef COMPEL_PIEGEN_H__
+#define COMPEL_PIEGEN_H__
 
 #include <stdio.h>
 #include <unistd.h>
@@ -51,4 +51,4 @@ do {										\
 
 extern int handle_binary(void *mem, size_t size);
 
-#endif /* __ELFTIL_H__ */
+#endif /* COMPEL_PIEGEN_H__ */

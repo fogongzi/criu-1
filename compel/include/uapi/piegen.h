@@ -1,5 +1,5 @@
-#ifndef __PIEGEN_TYPES_H__
-#define __PIEGEN_TYPES_H__
+#ifndef COMPEL_UAPI_PIEGEN_H__
+#define COMPEL_UAPI_PIEGEN_H__
 
 #include <errno.h>
 
@@ -14,4 +14,4 @@ typedef struct {
 	long		value;
 } elf_reloc_t;
 
-#endif /* __PIEGEN_TYPES_H__ */
+#endif /* COMPEL_UAPI_PIEGEN_H__ */

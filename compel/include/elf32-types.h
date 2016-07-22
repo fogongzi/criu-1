@@ -1,5 +1,5 @@
-#ifndef __COMPEL_ELF32_TYPES_H__
-#define __COMPEL_ELF32_TYPES_H__
+#ifndef COMPEL_ELF32_TYPES_H__
+#define COMPEL_ELF32_TYPES_H__
 
 #define Elf_Ehdr	Elf32_Ehdr
 #define Elf_Shdr	Elf32_Shdr
@@ -13,4 +13,4 @@
 #define ELF_R_SYM	ELF32_R_SYM
 #define ELF_R_TYPE	ELF32_R_TYPE
 
-#endif /* __COMPEL_ELF32_TYPES_H__ */
+#endif /* COMPEL_ELF32_TYPES_H__ */
