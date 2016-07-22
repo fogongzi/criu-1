@@ -18,10 +18,8 @@
 #include "handle-elf.h"
 #include "piegen.h"
 
-/* TODO: merge with util-vdso.c part in criu header */
 /* Check if pointer is out-of-bound */
-static bool
-__ptr_oob(const uintptr_t ptr, const uintptr_t start, const size_t size)
+static bool __ptr_oob(const uintptr_t ptr, const uintptr_t start, const size_t size)
 {
 	uintptr_t end = start + size;
 
@@ -30,7 +28,7 @@ __ptr_oob(const uintptr_t ptr, const uintptr_t start, const size_t size)
 
 /* Check if pointed structure's end is out-of-bound */
 static bool __ptr_struct_end_oob(const uintptr_t ptr, const size_t struct_size,
-				const uintptr_t start, const size_t size)
+				 const uintptr_t start, const size_t size)
 {
 	/* the last byte of the structure should be inside [begin, end) */
 	return __ptr_oob(ptr + struct_size - 1, start, size);
@@ -38,7 +36,7 @@ static bool __ptr_struct_end_oob(const uintptr_t ptr, const size_t struct_size,
 
 /* Check if pointed structure is out-of-bound */
 static bool __ptr_struct_oob(const uintptr_t ptr, const size_t struct_size,
-				const uintptr_t start, const size_t size)
+			     const uintptr_t start, const size_t size)
 {
 	return __ptr_oob(ptr, start, size) ||
 		__ptr_struct_end_oob(ptr, struct_size, start, size);
@@ -74,7 +72,8 @@ static int do_relative_toc(long value, uint16_t *location,
         }
 
 	if ((~mask & 0xffff) & value) {
-		pr_err("bad TOC16 relocation (%ld) (0x%lx)\n", value, (~mask & 0xffff) & value);
+		pr_err("bad TOC16 relocation (%ld) (0x%lx)\n",
+		       value, (~mask & 0xffff) & value);
 		return -1;
 	}
 
@@ -155,7 +154,8 @@ int __handle_elf(void *mem, size_t size)
 	pr_debug("Header\n");
 	pr_debug("------------\n");
 	pr_debug("\ttype 0x%x machine 0x%x version 0x%x\n",
-		 (unsigned)hdr->e_type, (unsigned)hdr->e_machine, (unsigned)hdr->e_version);
+		 (unsigned)hdr->e_type, (unsigned)hdr->e_machine,
+		 (unsigned)hdr->e_version);
 
 	if (!is_header_supported(hdr)) {
 		pr_err("Unsupported header detected\n");
@@ -249,7 +249,8 @@ int __handle_elf(void *mem, size_t size)
 #endif
 			if (strncmp(name, "__export", 8))
 				continue;
-			if ((sym->st_shndx && sym->st_shndx < hdr->e_shnum) || sym->st_shndx == SHN_ABS) {
+			if ((sym->st_shndx && sym->st_shndx < hdr->e_shnum) ||
+			    sym->st_shndx == SHN_ABS) {
 				if (sym->st_shndx == SHN_ABS) {
 					sh_src = NULL;
 				} else {
@@ -258,7 +259,8 @@ int __handle_elf(void *mem, size_t size)
 				}
 				pr_out("#define %s%s 0x%lx\n",
 				       opts.prefix_name, name,
-				       (unsigned long)(sym->st_value + (sh_src ? sh_src->sh_addr : 0)));
+				       (unsigned long)(sym->st_value +
+						       (sh_src ? sh_src->sh_addr : 0)));
 			}
 		}
 	}
@@ -359,7 +361,9 @@ int __handle_elf(void *mem, size_t size)
 			}
 
 #ifdef ELF_PPC64
-/* Snippet from the OpenPOWER ABI for Linux Supplement:
+/*
+ * Snippet from the OpenPOWER ABI for Linux Supplement:
+ *
  * The OpenPOWER ABI uses the three most-significant bits in the symbol
  * st_other field specifies the number of instructions between a function's
  * global entry point and local entry point. The global entry point is used
@@ -367,6 +371,7 @@ int __handle_elf(void *mem, size_t size)
  * local entry point is used when r2 is known to already be valid for the
  * function. A value of zero in these bits asserts that the function does
  * not use r2.
+ *
  * The st_other values have the following meanings:
  * 0 and 1, the local and global entry points are the same.
  * 2, the local entry point is at 1 instruction past the global entry point.
@@ -542,7 +547,7 @@ int __handle_elf(void *mem, size_t size)
 
 	pr_out("static __maybe_unused const char %s[] = {\n\t", opts.stream_name);
 
-	for (i=0, k=0; i < hdr->e_shnum; i++) {
+	for (i = 0, k = 0; i < hdr->e_shnum; i++) {
 		Elf_Shdr *sh = sec_hdrs[i];
 		unsigned char *shdata;
 		size_t j;
@@ -551,19 +556,19 @@ int __handle_elf(void *mem, size_t size)
 			continue;
 
 		shdata =  mem + sh->sh_offset;
-		pr_debug("Copying section '%s'\n" \
+		pr_debug("Copying section '%s'\n"
 			 "\tstart:0x%lx (gap:0x%lx) size:0x%lx\n",
 			 &secstrings[sh->sh_name], (unsigned long) sh->sh_addr,
 			 (unsigned long)(sh->sh_addr - k), (unsigned long) sh->sh_size);
 
 		/* write 0 in the gap between the 2 sections */
-		for (;k < sh->sh_addr; k++) {
+		for (; k < sh->sh_addr; k++) {
 			if (k && (k % 8) == 0)
 				pr_out("\n\t");
 			pr_out("0x00,");
 		}
 
-		for (j=0; j < sh->sh_size; j++, k++) {
+		for (j = 0; j < sh->sh_size; j++, k++) {
 			if (k && (k % 8) == 0)
 				pr_out("\n\t");
 			pr_out("%#02x,", shdata[j]);
