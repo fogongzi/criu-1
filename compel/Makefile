@@ -13,6 +13,7 @@ lib-y			+= src/lib/handle-elf-32.o
 obj-y			+= src/main.o
 
 CFLAGS_handle-elf-32.o += -UCONFIG_X86_64 -DCONFIG_X86_32
+CFLAGS_handle-elf-32.d += -UCONFIG_X86_64 -DCONFIG_X86_32
 
 cleanup-y		+= compel/compel
 cleanup-y		+= compel/libcompel.so
