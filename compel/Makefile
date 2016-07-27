@@ -4,6 +4,7 @@ include $(SRC_DIR)/Makefile.versions
 
 ccflags-y		+= -iquote compel/src/lib/arch/$(ARCH)/include
 ccflags-y		+= -iquote compel/include
+ccflags-y		+= -iquote compel/plugins/include
 ccflags-y		+= -iquote $(SRC_DIR)/criu/include
 ccflags-y		+= -DCOMPEL_VERSION=\"$(COMPEL_SO_VERSION_MAJOR).$(COMPEL_SO_VERSION_MINOR)\"
 ccflags-y		+= -fPIC
@@ -20,5 +21,16 @@ CFLAGS_handle-elf-32.d += -UCONFIG_X86_64 -DCONFIG_X86_32
 cleanup-y		+= compel/compel
 cleanup-y		+= compel/libcompel.so
 
-$(obj)/plugins/%: .FORCE
-	$(Q) $(MAKE) $(build)=$(obj)/plugins $@
+#plugins-y		+= std
+
+#define gen-plugin-rule
+#$(info MAKECMDGOALS=$(MAKECMDGOALS))
+#$(obj)/plugins/$(1)/%: .FORCE
+#	$$(Q) $$(MAKE) $$(build)=$(obj)/plugins/$(1) $$@
+#$(1)-clean:
+#	$$(Q) $$(MAKE) $$(build)=$(obj)/plugins/$(1) clean
+#.PHONY: $(obj)/plugins/$(1)-clean
+#endef
+
+#$(foreach i,$(plugins-y),$(eval $(call gen-plugin-rule,$(i))))
+#clean: $(patsubst %,%-clean,$(plugins-y))

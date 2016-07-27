@@ -3,6 +3,11 @@
 compel/%: .FORCE
 	$(Q) $(MAKE) $(build)=compel $@
 
+#
+# Plugins
+compel/plugins/%: .FORCE
+	$(Q) $(MAKE) $(build)=compel/plugins $@
+
 compel/compel: compel/built-in.o compel/lib.a
 	$(call msg-link, $@)
 	$(Q) $(CC) $(CFLAGS) $^ $(WRAPFLAGS) $(LDFLAGS) -rdynamic -o $@
