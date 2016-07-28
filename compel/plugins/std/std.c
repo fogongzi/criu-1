@@ -4,14 +4,11 @@
 #include "uapi/plugin-std.h"
 #include "std-priv.h"
 
-#include "asm/prologue.h"
-#include "asm/sigframe.h"
-
 #include "version.h"
 
 extern int main(void *arg_p, unsigned int arg_s);
 
-const int __export_std_compel_version = COMPEL_VERSION_CODE;
+const int __export_std_compel_version = 1;
 
 static struct prologue_init_args *init_args;
 static int ctl_socket = -1;
